@@ -309,7 +309,12 @@ function setupEventListeners() {
 // REST GET System State
 function fetchState(setDefaultUser = false) {
     fetch("/api/state")
-        .then(res => res.json())
+        .then(res => {
+            if (!res.ok) {
+                throw new Error(`Backend returned HTTP ${res.status}`);
+            }
+            return res.json();
+        })
         .then(data => {
             serverState = data;
             populateUserSelector(setDefaultUser);
@@ -322,7 +327,16 @@ function fetchState(setDefaultUser = false) {
             updateAdminRemoveButton();
             updateTrackingDisplay();
         })
-        .catch(err => console.error("Error fetching state:", err));
+        .catch(err => {
+            console.error("Error fetching state:", err);
+            activeUserName.textContent = "Backend unavailable";
+            activeUserContact.textContent = "The Java service has not been deployed yet. Complete the Render deployment to load live data.";
+            activeRewards.textContent = "--";
+            scheduleDetails.innerHTML = `<div class="backend-status-message"><i class="fa-solid fa-server"></i><strong>Waiting for backend service</strong><span>Frontend is online, but the reservation API is not reachable yet.</span></div>`;
+            trackingStatus.textContent = "Backend unavailable";
+            trackingLocation.textContent = "--";
+            trackingNote.textContent = "Deploy the Render Java service, then refresh this page.";
+        });
 }
 
 function populateTrackingScheduleSelector() {

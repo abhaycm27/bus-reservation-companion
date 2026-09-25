@@ -2032,6 +2032,29 @@ body[data-page="comfort"] #comfort-page {
     font-size: 12px;
 }
 
+.backend-status-message {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 18px;
+    border-left: 3px solid var(--accent-red);
+    background: #211315;
+}
+
+.backend-status-message i {
+    color: var(--accent-red);
+    font-size: 18px;
+}
+
+.backend-status-message strong {
+    color: var(--text-primary);
+}
+
+.backend-status-message span {
+    color: var(--text-muted);
+    font-size: 12px;
+}
+
 @media (max-width: 760px) {
     .tracking-toolbar,
     .tracking-status-grid {
