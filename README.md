@@ -77,6 +77,10 @@ Prerequisite: JDK 17 or higher installed and available on `PATH`.
 
 Open http://localhost:8080/ in your browser after launching.
 
+## Deploying to Render
+
+The repository includes `render.yaml` for deploying the Java web server as a Render Web Service. Connect the GitHub repository to Render and choose **Blueprint** deployment. Render supplies the `PORT` environment variable automatically, and the server uses it in production.
+
 ## Optional: Serve only the static frontend with Node
 If you prefer to run just the static frontend with automatic reloads, use the included Node dev setup.
 

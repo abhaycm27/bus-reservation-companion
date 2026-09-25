@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: bus-reservation-companion
+    runtime: java
+    buildCommand: javac -d bin -sourcepath src src/com/busreservation/server/WebServer.java
+    startCommand: java -cp bin com.busreservation.server.WebServer
+    healthCheckPath: /
