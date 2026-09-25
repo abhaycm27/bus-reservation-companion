@@ -1,0 +1,12 @@
+bin/
+node_modules/
+*.class
+.vscode/
+.idea/
+*.log
+run_log.txt
+run_log_utf8.txt
+warnings.txt
+warnings_ascii.txt
+Thumbs.db
+.DS_Store

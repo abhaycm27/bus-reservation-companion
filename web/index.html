@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TransitFlow | Bus Operations Console</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="dark-theme">
+    
+    <div class="glow-bg"></div>
+    
+    <header class="app-header">
+        <div class="header-container">
+            <div class="logo">
+                <i class="fa-solid fa-bus-simple logo-icon"></i>
+                <div class="logo-text">
+                    <h1>TransitFlow</h1>
+                    <span>Travel Companion Platform</span>
+                </div>
+            </div>
+            
+            <div class="header-actions">
+                <!-- User Perspective Control -->
+                <div class="user-selector-container">
+                    <label for="user-select"><i class="fa-solid fa-user-circle"></i> Active User:</label>
+                    <select id="user-select" class="premium-select">
+                        <!-- Filled by JS -->
+                    </select>
+                </div>
+                
+                <button id="btn-register-drawer" class="btn btn-secondary">
+                    <i class="fa-solid fa-user-plus"></i> Register User
+                </button>
+
+                <button id="btn-remove-user" class="btn btn-danger-outline hidden" title="Remove selected user (admin only)">
+                    <i class="fa-solid fa-user-slash"></i> Remove User
+                </button>
+
+                <button id="btn-manage-users" class="btn btn-danger-outline hidden" title="Manage platform users (admin only)">
+                    <i class="fa-solid fa-users-gear"></i> Manage Users
+                </button>
+
+                <button id="btn-reset-state" class="btn btn-danger-outline" title="Reset system state to baseline simulation">
+                    <i class="fa-solid fa-rotate-right"></i> Reset System
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <div class="app-workspace">
+            <aside class="side-navigation">
+                <div class="side-navigation-label">Operations</div>
+                <nav class="main-nav" aria-label="Primary navigation">
+                    <a class="nav-link active" href="#reservation" data-page="reservation"><i class="fa-solid fa-ticket"></i> Reservation</a>
+                    <a class="nav-link" href="#predictions" data-page="predictions"><i class="fa-solid fa-chart-line"></i> Predictions</a>
+                    <a class="nav-link" href="#emergency" data-page="emergency"><i class="fa-solid fa-triangle-exclamation"></i> Emergency</a>
+                    <a class="nav-link" href="#comfort" data-page="comfort"><i class="fa-solid fa-star"></i> Comfort</a>
+                    <a class="nav-link" href="#gallery" data-page="gallery"><i class="fa-solid fa-images"></i> Gallery</a>
+                    <a class="nav-link" href="#tracking" data-page="tracking"><i class="fa-solid fa-location-crosshairs"></i> Live Tracking</a>
+                </nav>
+            </aside>
+            <div class="page-content">
+        <!-- TOP: Profile Summary Banner (Conditional / Dynamic) -->
+        <section class="profile-banner glassmorphic">
+            <div class="profile-meta">
+                <div class="profile-avatar">
+                    <i class="fa-solid fa-passport"></i>
+                </div>
+                <div class="profile-details">
+                    <h2 id="active-user-name">Loading Profile...</h2>
+                    <p id="active-user-contact">Select a user to view contact and role</p>
+                </div>
+            </div>
+            <div class="profile-stats">
+                <div class="stat-card">
+                    <div class="stat-value" id="active-rewards">0</div>
+                    <div class="stat-label">Reward Points</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CENTER GRID: Split Layout (Left: Booking Hub, Right: Advanced Service Panels) -->
+        <div class="dashboard-grid">
+            
+            <!-- LEFT SECTION: Reservation Desk -->
+            <section id="reservation-page" class="dashboard-panel reservation-desk glassmorphic app-page">
+                <div class="panel-header">
+                    <div class="panel-title">
+                        <i class="fa-solid fa-ticket-simple icon-accent"></i>
+                        <h2>Reservation Desk</h2>
+                    </div>
+                    <div class="schedule-selector-wrap">
+                        <select id="schedule-select" class="premium-select">
+                            <!-- Populated dynamically -->
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Schedule Details Subpanel -->
+                <div id="schedule-details" class="schedule-details-box">
+                    <!-- Dynamic details about origin, destination, operator etc. -->
+                </div>
+
+                <!-- Bus Layout Preview & Selector -->
+                <div class="seat-map-section">
+                    <h3>Select Seats <span class="seat-map-subtitle">Choose a Seat to Lock or Book</span></h3>
+                    
+                    <div class="seat-legend">
+                        <div class="legend-item"><span class="legend-color available"></span> Available</div>
+                        <div class="legend-item"><span class="legend-color locked"></span> Locked (Temp)</div>
+                        <div class="legend-item"><span class="legend-color locked-by-me"></span> Locked by You</div>
+                        <div class="legend-item"><span class="legend-color booked"></span> Booked</div>
+                    </div>
+
+                    <div class="seat-grid-container">
+                        <!-- Front Section with Driver and Entry Door -->
+                        <div class="bus-front-section">
+                            <div class="bus-driver-area">
+                                <span class="steering-wheel"><i class="fa-solid fa-dharmachakra"></i></span>
+                                <span class="driver-label">Driver</span>
+                            </div>
+                            <div class="entry-door-section">
+                                <div class="entry-door">
+                                    <i class="fa-solid fa-door-open"></i>
+                                    <span>Entry</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Main Bus Layout with Seats -->
+                        <div class="bus-main-layout">
+                            <div class="bus-body">
+                                <!-- Left side window -->
+                                <div class="window-left">
+                                    <i class="fa-solid fa-window-maximize"></i>
+                                </div>
+                                
+                                <!-- Left seats section -->
+                                <div class="seats-section seats-left">
+                                    <div id="seat-grid" class="seat-grid">
+                                        <!-- Render seats dynamically -->
+                                    </div>
+                                </div>
+                                
+                                <!-- Central aisle -->
+                                <div class="central-aisle">
+                                    <div class="aisle-line"></div>
+                                </div>
+                                
+                                <!-- Right seats section -->
+                                <div class="seats-section seats-right">
+                                    <!-- Right seats rendered as part of main grid -->
+                                </div>
+                                
+                                <!-- Right side window -->
+                                <div class="window-right">
+                                    <i class="fa-solid fa-window-maximize"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Rear Section with Emergency Exit -->
+                        <div class="bus-rear-section">
+                            <div class="emergency-exit-section">
+                                <div class="emergency-exit">
+                                    <i class="fa-solid fa-triangle-exclamation"></i>
+                                    <span>Emergency Exit</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Live Checkout & Dynamic Payment Strategies -->
+                <div id="checkout-panel" class="checkout-panel hidden">
+                    <div class="checkout-header">
+                        <h3><i class="fa-solid fa-shield-halved"></i> Book Selected Seat</h3>
+                        <button id="btn-cancel-checkout" class="close-btn">&times;</button>
+                    </div>
+                    
+                    <div class="checkout-body">
+                        <div class="pricing-summary">
+                            <div class="price-row">
+                                <span>Seat Number</span>
+                                <strong id="summary-seat-num">-</strong>
+                            </div>
+                            <div class="price-row">
+                                <span>Seat Type Multiplier</span>
+                                <span id="summary-multiplier">1.0x</span>
+                            </div>
+                            <div class="price-row total">
+                                <span>Total Price (Inc. Tax & Fee)</span>
+                                <strong id="summary-final-price">₹0.00</strong>
+                            </div>
+                        </div>
+
+                        <form id="payment-form" class="payment-form">
+                            <div class="form-group">
+                                <label for="payment-method">Payment Strategy</label>
+                                <select id="payment-method" class="premium-select" required>
+                                    <option value="upi">UPI Strategy</option>
+                                    <option value="card">Credit/Debit Card Strategy</option>
+                                    <option value="wallet">Wallet Balance Strategy</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group" id="payment-detail-container">
+                                <label id="payment-detail-label" for="payment-detail-input">UPI Address</label>
+                                <input type="text" id="payment-detail-input" class="premium-input" placeholder="e.g. alice@okhdfcbank" required>
+                            </div>
+
+                            <button type="submit" id="btn-confirm-payment" class="btn btn-primary btn-block">
+                                <i class="fa-solid fa-credit-card"></i> Pay & Finalize Ticket
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Last Receipt Summary (Visual Receipt Design) -->
+                <div id="receipt-display" class="receipt-box hidden">
+                    <!-- Dynamic receipt -->
+                </div>
+            </section>
+
+            <!-- RIGHT SECTION: Companion Services & Simulator Control -->
+            <div class="services-column">
+                
+                <!-- Prediction Engine (Strategy Pattern Simulation) -->
+                <section id="predictions-page" class="dashboard-panel prediction-engine glassmorphic app-page">
+                    <div class="panel-header">
+                        <div class="panel-title">
+                            <i class="fa-solid fa-clock-rotate-left icon-accent"></i>
+                            <h2>Delay Prediction Engine</h2>
+                        </div>
+                    </div>
+                    <div class="panel-body">
+                        <p class="panel-description">Simulate route delay prediction models by toggling algorithms dynamically at runtime.</p>
+                        
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="predict-route">Selected Route</label>
+                                <select id="predict-route" class="premium-select">
+                                    <option value="RT-KOC-TRV">Kochi ➔ Thiruvananthapuram (Route #1)</option>
+                                    <option value="RT-KOC-KZD">Kochi ➔ Kozhikode (Coastal Route)</option>
+                                    <option value="RT-KOC-MNR">Kochi ➔ Munnar (Hill Route)</option>
+                                    <option value="RT-KOC-KNR">Kochi ➔ Kannur (North Kerala Route)</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="predict-traffic">Traffic Volume Factor (multiplier)</label>
+                                <div class="range-container">
+                                    <input type="range" id="predict-traffic" min="1.0" max="3.0" step="0.1" value="1.5">
+                                    <span id="traffic-val">1.5x</span>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="predict-weather">Weather Checklist</label>
+                                <select id="predict-weather" class="premium-select">
+                                    <option value="CLEAR">Sunny / Clear</option>
+                                    <option value="OVERCAST">Overcast / Foggy</option>
+                                    <option value="RAINY">Heavy Rain</option>
+                                    <option value="STORMY">Stormy / Blizzard</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="predict-strategy">Prediction Model Strategy</label>
+                                <div class="btn-group">
+                                    <button type="button" id="strat-historical" class="btn btn-outline active">Historical Traffic</button>
+                                    <button type="button" id="strat-weather" class="btn btn-outline">Live Weather Checkpoint</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button id="btn-predict-delay" class="btn btn-secondary btn-block">
+                            <i class="fa-solid fa-gauge-high"></i> Query Delay Strategy
+                        </button>
+
+                        <div id="prediction-result" class="prediction-result-box hidden">
+                            <div class="result-label">Predicted Delay Estimation</div>
+                            <div class="result-number"><span id="predicted-minutes">0</span> <small>minutes</small></div>
+                            <div class="result-meta" id="predicted-strategy-name">Strategy Used: Historical Traffic Delay</div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Auto-Rescue Controller (Emergency Breakdown Simulation) -->
+                <section id="emergency-page" class="dashboard-panel emergency-rescue glassmorphic warning-border app-page">
+                    <div class="panel-header">
+                        <div class="panel-title">
+                            <i class="fa-solid fa-triangle-exclamation icon-accent pulse-warning"></i>
+                            <h2>Emergency Breakdown Command</h2>
+                        </div>
+                    </div>
+                    <div class="panel-body">
+                        <p class="panel-description">Simulate a sudden vehicle breakdown mid-transit. The Auto-Rescue engine will parse active bookings and relocate everyone to a backup rescue bus instantly.</p>
+                        
+                        <div class="field-value-display">
+                            <div class="field">Primary Bus Schedule</div>
+                            <div class="value">SCH-1001 (Volvo Premium)</div>
+                        </div>
+                        <div class="field-value-display">
+                            <div class="field">Emergency Rescue Bus Schedule</div>
+                            <div class="value">SCH-1002-RESCUE (Volvo Backup)</div>
+                        </div>
+
+                        <button id="btn-trigger-rescue" class="btn btn-danger btn-block pulsating-button">
+                            <i class="fa-solid fa-kit-medical"></i> Trigger Simulated Vehicle Breakdown
+                        </button>
+                    </div>
+                </section>
+
+                <!-- Comfort Index Feedback Engine -->
+                <section id="comfort-page" class="dashboard-panel comfort-panel glassmorphic app-page">
+                    <div class="panel-header">
+                        <div class="panel-title">
+                            <i class="fa-solid fa-star-half-stroke icon-accent"></i>
+                            <h2>Comfort Feedbacks</h2>
+                        </div>
+                    </div>
+                    <div class="panel-body">
+                        <p class="panel-description">Passengers are security-screened. Only passengers with active confirmed bookings can submit comfort reviews.</p>
+                        
+                        <form id="comfort-rating-form" class="rate-form">
+                            <div class="rating-row">
+                                <label>Air Conditioning (AC) Rating</label>
+                                <div class="rating-stars" data-field="ac">
+                                    <input type="radio" name="ac-rating" value="5" id="ac-5"><label for="ac-5">★</label>
+                                    <input type="radio" name="ac-rating" value="4" id="ac-4"><label for="ac-4">★</label>
+                                    <input type="radio" name="ac-rating" value="3" id="ac-3"><label for="ac-3">★</label>
+                                    <input type="radio" name="ac-rating" value="2" id="ac-2"><label for="ac-2">★</label>
+                                    <input type="radio" name="ac-rating" value="1" id="ac-1" checked><label for="ac-1">★</label>
+                                </div>
+                            </div>
+                            <div class="rating-row">
+                                <label>Legroom / Seat Spacing</label>
+                                <div class="rating-stars" data-field="spacing">
+                                    <input type="radio" name="spacing-rating" value="5" id="sp-5"><label for="sp-5">★</label>
+                                    <input type="radio" name="spacing-rating" value="4" id="sp-4"><label for="sp-4">★</label>
+                                    <input type="radio" name="spacing-rating" value="3" id="sp-3"><label for="sp-3">★</label>
+                                    <input type="radio" name="spacing-rating" value="2" id="sp-2"><label for="sp-2">★</label>
+                                    <input type="radio" name="spacing-rating" value="1" id="sp-1" checked><label for="sp-1">★</label>
+                                </div>
+                            </div>
+                            <div class="rating-row">
+                                <label>Hygiene & Cleanliness</label>
+                                <div class="rating-stars" data-field="cleanliness">
+                                    <input type="radio" name="clean-rating" value="5" id="cl-5"><label for="cl-5">★</label>
+                                    <input type="radio" name="clean-rating" value="4" id="cl-4"><label for="cl-4">★</label>
+                                    <input type="radio" name="clean-rating" value="3" id="cl-3"><label for="cl-3">★</label>
+                                    <input type="radio" name="clean-rating" value="2" id="cl-2"><label for="cl-2">★</label>
+                                    <input type="radio" name="clean-rating" value="1" id="cl-1" checked><label for="cl-1">★</label>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-secondary btn-block">
+                                <i class="fa-solid fa-paper-plane"></i> Submit Inspected Cleanliness Rating
+                            </button>
+                        </form>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <!-- LIVE TRACKING: Current Bus Location -->
+        <section id="tracking-page" class="dashboard-panel tracking-page glassmorphic app-page">
+            <div class="panel-header">
+                <div class="panel-title">
+                    <i class="fa-solid fa-location-crosshairs icon-accent"></i>
+                    <h2>Estimated Bus Tracking</h2>
+                </div>
+                <div class="tracking-live-badge"><span class="tracking-pulse"></span> SCHEDULE ESTIMATE</div>
+            </div>
+            <div class="tracking-accuracy-note">
+                <i class="fa-solid fa-circle-info"></i>
+                <span><strong>GPS not connected.</strong> This view estimates the bus position from its departure and arrival schedule. It is not an exact live location.</span>
+            </div>
+            <div class="tracking-toolbar">
+                <div class="form-group">
+                    <label for="tracking-schedule-select">Track Schedule</label>
+                    <select id="tracking-schedule-select" class="premium-select"></select>
+                </div>
+                <div class="tracking-updated">
+                    <span>Last update</span>
+                    <strong id="tracking-last-updated">--:--:--</strong>
+                </div>
+            </div>
+            <div class="tracking-status-grid">
+                <div class="tracking-status-card"><span class="tracking-label">Current status</span><strong id="tracking-status">Loading tracking...</strong></div>
+                <div class="tracking-status-card"><span class="tracking-label">Current location</span><strong id="tracking-location">--</strong></div>
+                <div class="tracking-status-card"><span class="tracking-label">Bus / route</span><strong id="tracking-bus-route">--</strong></div>
+                <div class="tracking-status-card"><span class="tracking-label">Estimated arrival</span><strong id="tracking-arrival">--</strong></div>
+            </div>
+            <div class="tracking-map" aria-label="Live bus route map">
+                <div class="tracking-map-grid"></div>
+                <div class="tracking-route-line"><span id="tracking-route-progress"></span></div>
+                <div class="tracking-stop tracking-stop-origin"><span id="tracking-origin">Origin</span></div>
+                <div class="tracking-stop tracking-stop-mid"><span id="tracking-midpoint">En route</span></div>
+                <div class="tracking-stop tracking-stop-destination"><span id="tracking-destination">Destination</span></div>
+                <div id="tracking-bus-marker" class="tracking-bus-marker" title="Current estimated bus position" aria-label="Current estimated bus position"><i class="fa-solid fa-bus-simple"></i></div>
+            </div>
+            <p id="tracking-note" class="tracking-note">The estimate refreshes automatically every few seconds.</p>
+        </section>
+
+        <!-- BOTTOM STREAM: Memory Stream Gallery -->
+        <section id="gallery-page" class="dashboard-panel memory-gallery-panel glassmorphic app-page">
+            <div class="panel-header">
+                <div class="panel-title">
+                    <i class="fa-solid fa-images icon-accent"></i>
+                    <h2>Trip Memories Photo Stream</h2>
+                </div>
+                <button id="btn-show-upload" class="btn btn-primary-gradient">
+                    <i class="fa-solid fa-upload"></i> Share Memory Photo
+                </button>
+            </div>
+            <div class="panel-body">
+                <!-- Trip Photo Stream -->
+                <div id="media-stream-grid" class="media-stream-grid">
+                    <!-- Photo cards injected dynamically -->
+                </div>
+            </div>
+        </section>
+            </div>
+        </div>
+    </main>
+
+    <!-- FLOATING DRAWER: User Registrations -->
+    <div id="drawer-register" class="drawer">
+        <div class="drawer-content">
+            <div class="drawer-header">
+                <h3>Register Platform Account</h3>
+                <button id="btn-close-drawer" class="btn-close">&times;</button>
+            </div>
+            <form id="register-form">
+                <div class="form-group">
+                    <label for="reg-type">User Profile Class</label>
+                    <select id="reg-type" class="premium-select">
+                        <option value="passenger">Passenger Account</option>
+                        <option value="driver">Bus Driver</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <div style="display: flex; gap: 8px; align-items: center;">
+                        <div style="flex: 1;">
+                            <label for="reg-id">Unique User ID (Auto-Generated)</label>
+                            <input type="text" id="reg-id" class="premium-input" placeholder="USR-PL-555" readonly>
+                        </div>
+                        <button type="button" id="btn-generate-id" class="btn btn-secondary" style="margin-top: 20px;" title="Generate new User ID">
+                            <i class="fa-solid fa-sync"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="reg-name">Full Name</label>
+                    <input type="text" id="reg-name" class="premium-input" placeholder="John Doe" required>
+                </div>
+                <div class="form-group">
+                    <label for="reg-email">Email Address</label>
+                    <input type="email" id="reg-email" class="premium-input" placeholder="john@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="reg-phone">Phone Number</label>
+                    <input type="text" id="reg-phone" class="premium-input" placeholder="+91-98765-43210" required>
+                </div>
+                <div class="form-group">
+                    <label for="reg-creds">Auth Password</label>
+                    <input type="password" id="reg-creds" class="premium-input" placeholder="********" required>
+                </div>
+
+                <!-- Driver specific inputs -->
+                <div id="driver-fields" class="hidden">
+                    <div class="form-group">
+                        <label for="reg-license">Commercial Driving License ID</label>
+                        <input type="text" id="reg-license" class="premium-input" placeholder="DL-889922">
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-exp">Years of Experience</label>
+                        <input type="number" id="reg-exp" class="premium-input" min="0" value="5">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block">Confirm Account Creation</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ADMIN DRAWER: User Management -->
+    <div id="drawer-users" class="drawer">
+        <div class="drawer-content">
+            <div class="drawer-header">
+                <div>
+                    <h3>User Management</h3>
+                    <span class="drawer-kicker">Admin access only</span>
+                </div>
+                <button id="btn-close-users" class="btn-close">&times;</button>
+            </div>
+            <p class="panel-description">Review registered platform accounts and remove users who should no longer have access.</p>
+            <div id="user-management-list" class="user-management-list"></div>
+        </div>
+    </div>
+
+    <!-- FLOATING DRAWER: Upload Photo -->
+    <div id="drawer-upload" class="drawer">
+        <div class="drawer-content">
+            <div class="drawer-header">
+                <h3>Share Trip Memory</h3>
+                <button id="btn-close-upload-drawer" class="btn-close">&times;</button>
+            </div>
+            <form id="upload-photo-form">
+                <div class="form-group">
+                    <label for="upload-url">Scenic Photo URL</label>
+                    <input type="url" id="upload-url" class="premium-input" placeholder="https://images.unsplash.com/photo-..." required>
+                    <span class="hint">Use a public image URL or select from quick templates:</span>
+                    <div class="sample-images">
+                        <span class="sample-img-chip" data-url="https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&q=80&w=800">Interior View</span>
+                        <span class="sample-img-chip" data-url="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&q=80&w=800">Beachside Stop</span>
+                        <span class="sample-img-chip" data-url="https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=800">Mountain Route</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="upload-caption">Memory Caption</label>
+                    <input type="text" id="upload-caption" class="premium-input" placeholder="Beautiful road trip vibes..." required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Post to Photo Stream</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notifications (bottom-right) -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>

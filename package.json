@@ -1,0 +1,12 @@
+{
+  "name": "bus-reservation-companion-web",
+  "version": "1.0.0",
+  "description": "Static frontend live-server for Bus Reservation Companion",
+  "private": true,
+  "scripts": {
+    "start:web": "live-server web --port=3000 --open=/index.html --quiet"
+  },
+  "devDependencies": {
+    "live-server": "^1.2.2"
+  }
+}
