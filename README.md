@@ -81,6 +81,10 @@ Open http://localhost:8080/ in your browser after launching.
 
 The repository includes `render.yaml` for deploying the Java web server as a Render Web Service. Connect the GitHub repository to Render and choose **Blueprint** deployment. Render supplies the `PORT` environment variable automatically, and the server uses it in production.
 
+## Deploying the frontend to Netlify
+
+The repository also includes `netlify.toml`. In Netlify, import this repository and deploy it with the default settings. Netlify publishes the `web/` folder and proxies `/api/*` requests to the Render backend at `bus-reservation-companion.onrender.com`.
+
 ## Optional: Serve only the static frontend with Node
 If you prefer to run just the static frontend with automatic reloads, use the included Node dev setup.
 
